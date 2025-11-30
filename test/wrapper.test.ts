@@ -1,5 +1,5 @@
-// A.I generated code
-const { trace } = require('../src/index'); // Import the trace function from the TypeScript module
+import { describe, test, expect, jest } from '@jest/globals';
+import { trace } from '../src/index';
 
 test('trace runs the inner wrapped function', () => {
   const tracedFunction = trace(() => {
@@ -14,7 +14,7 @@ test('trace runs the inner wrapped function', () => {
 
 test('trace logs inner function start and end', ()=>{
 
-    const consoleSpy = jest.spyOn(console, 'log').mockImplementation();
+    const consoleSpy = jest.spyOn(console, 'log').mockImplementation(() => {});
     
     const tracedFunction = trace(() => {
       console.log("some work...")
@@ -29,9 +29,8 @@ test('trace logs inner function start and end', ()=>{
     consoleSpy.mockRestore();
 });
 
-
 test('trace shows passed parameters initial values', ()=>{
-  const consoleSpy = jest.spyOn(console,'log').mockImplementation();
+  const consoleSpy = jest.spyOn(console,'log').mockImplementation(() => {});
 
   const tracedFunction = trace((name: string, nbr: number) => {
       console.log('some work...')
@@ -39,7 +38,19 @@ test('trace shows passed parameters initial values', ()=>{
 
   tracedFunction("abc",123);
 
-  expect(consoleSpy).toHaveBeenCalledWith("parameter: abc");
-  expect(consoleSpy).toHaveBeenCalledWith("parameter: " + 123);  
+  expect(consoleSpy).toHaveBeenCalledWith("arg0 = abc");
+  expect(consoleSpy).toHaveBeenCalledWith("arg1 = " + 123);  
+})
 
+test('trace logs exception errors when traced function fails', ()=>{
+  const consoleSpy = jest.spyOn(console, "log").mockImplementation(() => {});
+  
+  const tracedFunction = trace(() => {
+    throw new Error('error')  
+  });
+
+  tracedFunction();
+
+  expect(consoleSpy).toHaveBeenCalledWith("error");
+  
 })
